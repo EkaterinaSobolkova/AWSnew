@@ -1,0 +1,64 @@
+import os 
+import datetime 
+from application import application as app 
+from flask import Flask 
+from flask import g 
+from flask import request 
+from flask import session 
+from flask import render_template, flash 
+
+
+if 'ranepadata' in os.environ: 
+DATABASES = { 
+'default': { 
+'ENGINE': 'django.db.backends.mysql', 
+'NAME': os.environ['ranepadata'], 
+'USER': os.environ['ranepastudent'], 
+'PASSWORD': os.environ['ranepapassword'], 
+'HOST': os.environ['ranepadata.ctjwrfgzyqcu.eu-west-1.rds.amazonaws.com'], 
+'PORT': os.environ['3306'], 
+} 
+} 
+
+
+app = Flask(__ran__) 
+app.config.from_object(__ran__) 
+database = SqliteDatabase(DATABASES) 
+
+class BaseModel(Model): 
+class Meta: 
+database = database 
+
+
+class AGE(BaseModel): 
+id = CharField(unique=True) 
+Age = CharField() 
+NS = CharField(unique=True) 
+Program = CharField() 
+class IMAGE(BaseModel): 
+id = CharField(unique=True) 
+Age = CharField() 
+NS = CharField(unique=True) 
+imageurl = CharField() 
+class GRADE(BaseModel): 
+id = CharField(unique=True) 
+Age = CharField() 
+NS = CharField(unique=True) 
+grade = CharField() 
+def create_tables(): 
+with database: 
+database.create_tables([AGE, IMAGE, GRADE]) 
+@app.errorhandler(404) 
+def page_not_found(error): 
+return render_template('page_not_found.html') 
+@app.before_request 
+def before_request(): 
+g.db = database 
+g.db.connect() 
+@app.after_request 
+def after_request(response): 
+g.db.close() 
+return response 
+if __ran__ == '__main__': 
+create_tables() 
+app.run()
